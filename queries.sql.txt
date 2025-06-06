@@ -1,0 +1,41 @@
+-- 1. View sample customers
+SELECT * FROM customers LIMIT 10;
+
+-- 2. Count of total orders per customer
+SELECT customer_id, COUNT(order_id) AS total_orders
+FROM orders
+GROUP BY customer_id;
+
+-- 3. Join customers with orders (INNER JOIN)
+SELECT c.customer_name, o.order_id, o.order_date
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 4. LEFT JOIN with products not ordered
+SELECT p.product_name, o.order_id
+FROM products p
+LEFT JOIN order_items o ON p.product_id = o.product_id;
+
+-- 5. Total sales per product
+SELECT p.product_name, SUM(oi.quantity * oi.price) AS total_sales
+FROM products p
+JOIN order_items oi ON p.product_id = oi.product_id
+GROUP BY p.product_name
+ORDER BY total_sales DESC;
+
+-- 6. Customers who placed more than 5 orders
+SELECT customer_id
+FROM orders
+GROUP BY customer_id
+HAVING COUNT(order_id) > 5;
+
+-- 7. Create a view for customer order summary
+CREATE VIEW customer_order_summary AS
+SELECT c.customer_id, c.customer_name, COUNT(o.order_id) AS total_orders
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id;
+
+-- 8. Create an index to optimize customer_id lookup
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+
